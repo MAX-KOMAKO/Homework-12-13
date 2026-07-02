@@ -4,26 +4,31 @@ using TMPro;
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private float _timeLimit = 30f;
+    
     [SerializeField] private Ball _ball;
+    [SerializeField] private CoinCollector _coinCollector;
     [SerializeField] private GameObject[] _coins;
+    
     [SerializeField] private TMP_Text _timerText;
     [SerializeField] private TMP_Text _coinText;
     [SerializeField] private TMP_Text _messageText;
+    
     [SerializeField] private Transform _respawnPoint;
     [SerializeField] private Vector3 _startPosition;
-    [SerializeField] private float _fallThreshold = -1000f;
-    [SerializeField] private float _xLimit = 50f;
-    [SerializeField] private float _zLimit = 50f;
+    
+    [SerializeField] private float _fallThreshold = -5f;
+    [SerializeField] private float _xLimit = 20f;
+    [SerializeField] private float _zLimit = 20f;
 
-    private int _coinsCollected;
     private float _remainingTime;
     private bool _gameOver;
 
     private void Start()
     {
         _remainingTime = _timeLimit;
-        _coinsCollected = 0;
         _gameOver = false;
+        _coinCollector.ResetCoins();
+        
         UpdateUI();
         _messageText.text = "";
     }
@@ -36,10 +41,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (_gameOver)
-        {
-            return;
-        }
+        if (_gameOver) return;
 
         Vector3 pos = _ball.transform.position;
 
@@ -59,7 +61,7 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (_coinsCollected >= _coins.Length)
+        if (_coinCollector.CollectedCoins >= _coins.Length)
         {
             GameOver(true);
             return;
@@ -68,26 +70,22 @@ public class GameManager : MonoBehaviour
         UpdateUI();
     }
 
-    public void CollectCoin()
-    {
-        _coinsCollected++;
-        UpdateUI();
-    }
-
     public void GameOver(bool won)
     {
         _gameOver = true;
+        
         string message = won ? "Победа! Вы собрали все монеты!" : "Поражение! Мяч упал или вылетел!";
         Debug.Log(message);
+        
         _messageText.text = message + "\nНажмите R для перезапуска";
         _timerText.text = "0.00";
+        
         UpdateUI();
     }
 
     private void RestartGame()
     {
         _gameOver = false;
-        _coinsCollected = 0;
         _remainingTime = _timeLimit;
 
         Vector3 respawnPos = _respawnPoint != null ? _respawnPoint.position : _startPosition;
@@ -97,6 +95,8 @@ public class GameManager : MonoBehaviour
         {
             coin.SetActive(true);
         }
+        _coinCollector.ResetCoins();
+
         _messageText.text = "";
         UpdateUI();
     }
@@ -104,6 +104,6 @@ public class GameManager : MonoBehaviour
     private void UpdateUI()
     {
         _timerText.text = _remainingTime.ToString("F2");
-        _coinText.text = "Монеты: " + _coinsCollected + "/" + _coins.Length;
+        _coinText.text = "Монеты: " + _coinCollector.CollectedCoins + "/" + _coins.Length;
     }
 }

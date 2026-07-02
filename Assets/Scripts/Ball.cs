@@ -7,6 +7,7 @@ public class Ball : MonoBehaviour
 
     [SerializeField] private float _moveForce = 5f;
     [SerializeField] private float _jumpForce = 3f;
+    
     [SerializeField] private Transform _cameraTransform;
 
     private Rigidbody _rigidbody;
@@ -15,6 +16,7 @@ public class Ball : MonoBehaviour
     private void Awake()
     {
         _rigidbody = GetComponent<Rigidbody>();
+
         if (_cameraTransform == null)
         {
             _cameraTransform = Camera.main.transform;
@@ -56,7 +58,9 @@ public class Ball : MonoBehaviour
     {
         _rigidbody.velocity = Vector3.zero;
         _rigidbody.angularVelocity = Vector3.zero;
+
         transform.position = startPosition;
+
         _jumpRequested = false;
         _rigidbody.WakeUp();
     }

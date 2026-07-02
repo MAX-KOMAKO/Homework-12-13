@@ -25,6 +25,7 @@ public class CameraFollow : MonoBehaviour
         if (_target == null || _targetRigidbody == null) return;
 
         Vector3 targetDirection = _targetRigidbody.velocity.normalized;
+
         if (targetDirection.sqrMagnitude < 0.01f)
         {
             targetDirection = _currentDirection;
@@ -34,6 +35,7 @@ public class CameraFollow : MonoBehaviour
         _currentDirection.Normalize();
 
         Vector3 targetPosition = _target.position - _currentDirection * _distance + Vector3.up * _height;
+
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref _velocity, _smoothTime);
         transform.LookAt(_target);
     }
